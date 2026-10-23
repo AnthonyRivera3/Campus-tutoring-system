@@ -1,25 +1,298 @@
+
+/* MAIN LOGIN PAGE */
 .login-page {
-  display: flex;
   min-height: 100vh;
-  align-items: center;
-  justify-content: center;
-  padding: 0 1rem;
-  background-color: #f3f4f6;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr auto auto 1fr;
+  box-sizing: border-box;
+  font-family: "Segoe UI", Arial, sans-serif;
+
+  background:
+    linear-gradient(
+      to right,
+      transparent 50%,
+      #f8f6f2 50%
+    ),
+    linear-gradient(
+      30deg,
+      rgba(100, 145, 255, 0.07) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      120deg,
+      rgba(100, 145, 255, 0.07) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to right,
+      #111d3b 50%,
+      #f8f6f2 50%
+    );
+
+  background-size:
+    100% 100%,
+    55px 55px,
+    55px 55px,
+    100% 100%;
 }
 
-.login-card {
-  width: 100%;
-  max-width: 24rem;
-  padding: 2rem;
-  border-radius: 0.5rem;
-  background-color: #ffffff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
-}
+/* LEFT SIDE: BRAND AND HEADING */
+.login-page::before {
+  content: "CampusConnect\A\A Learn together.\A Go further.";
+  white-space: pre-line;
 
-.login-title {
-  margin: 0;
-  text-align: center;
-  font-size: 1.5rem;
+  grid-column: 1;
+  grid-row: 2;
+
+  padding: 0 10%;
+
+  color: #ffffff;
+  font-family: "Segoe UI", Arial, sans-serif;
+  font-size: clamp(30px, 3.3vw, 48px);
   font-weight: 600;
-  color: #111827;
+  line-height: 1.25;
+  letter-spacing: -1px;
+
+  position: relative;
+  z-index: 1;
+}
+
+/* LEFT SIDE: DESCRIPTION */
+.login-page::after {
+  content: "Connect with knowledgeable peer tutors who understand your courses, your campus, and where you want to go.";
+
+  grid-column: 1;
+  grid-row: 3;
+
+  max-width: 500px;
+  padding: 30px 10% 0;
+
+  color: #c4d4f5;
+  font-family: "Segoe UI", Arial, sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.8;
+}
+
+/* RIGHT SIDE: LOGIN CONTAINER */
+.login-card {
+  grid-column: 2;
+  grid-row: 1 / -1;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  width: 100%;
+  max-width: 520px;
+  margin: auto;
+  padding: 60px 50px;
+
+  box-sizing: border-box;
+  background: transparent;
+  box-shadow: none;
+}
+
+/* WELCOME LABEL */
+.login-card::before {
+  content: "WELCOME TO CAMPUSCONNECT";
+  display: block;
+
+  color: #2955db;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  margin-bottom: 22px;
+}
+
+/* LOGIN TITLE */
+.login-title {
+  margin: 0 0 25px;
+
+  color: #111d3b;
+  font-size: clamp(28px, 3vw, 38px);
+  font-weight: 600;
+  letter-spacing: -1px;
+  text-align: left;
+}
+
+/* LOGIN FORM */
+.login-card form {
+  width: 100%;
+}
+
+/* INPUT LABELS */
+.login-card label {
+  display: block;
+  margin-bottom: 8px;
+
+  color: #111d3b;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* USERNAME AND PASSWORD FIELDS */
+.login-card input {
+  display: block;
+  width: 100%;
+  padding: 16px;
+  margin-bottom: 20px;
+
+  box-sizing: border-box;
+  background: #ffffff;
+  border: 1px solid #d8dce5;
+  border-radius: 12px;
+
+  color: #111d3b;
+  font-family: inherit;
+  font-size: 15px;
+
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+
+/* INPUT PLACEHOLDERS */
+.login-card input::placeholder {
+  color: #9ba8bd;
+}
+
+/* INPUT FOCUS EFFECT */
+.login-card input:focus {
+  outline: none;
+  border-color: #2955db;
+  box-shadow: 0 0 0 4px rgba(41, 85, 219, 0.1);
+}
+
+/* LOGIN BUTTON */
+.login-card button {
+  width: 100%;
+  padding: 16px;
+
+  background: #2955db;
+  color: #ffffff;
+
+  border: none;
+  border-radius: 12px;
+
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+
+  box-shadow: 0 8px 20px rgba(41, 85, 219, 0.18);
+
+  transition:
+    background-color 0.2s,
+    transform 0.2s,
+    box-shadow 0.2s;
+}
+
+/* BUTTON HOVER EFFECT */
+.login-card button:hover {
+  background: #1f46bd;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 25px rgba(41, 85, 219, 0.25);
+}
+
+/* BUTTON CLICK EFFECT */
+.login-card button:active {
+  transform: translateY(0);
+}
+
+/* KEYBOARD ACCESSIBILITY */
+.login-card button:focus-visible {
+  outline: 3px solid #8baaff;
+  outline-offset: 3px;
+}
+
+/* LINKS */
+.login-card a {
+  color: #2955db;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.login-card a:hover {
+  text-decoration: underline;
+}
+
+/* TABLET AND MOBILE */
+@media (max-width: 768px) {
+  .login-page {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto 1fr;
+    background: #f8f6f2;
+  }
+
+  .login-page::before {
+    grid-column: 1;
+    grid-row: 1;
+
+    padding: 45px 25px 15px;
+    background: #111d3b;
+
+    font-size: 30px;
+  }
+
+  .login-page::after {
+    grid-column: 1;
+    grid-row: 2;
+
+    max-width: none;
+    margin: 0;
+    padding: 0 25px 45px;
+
+    background: #111d3b;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .login-card {
+    grid-column: 1;
+    grid-row: 3;
+
+    max-width: 520px;
+    padding: 50px 25px;
+  }
+
+  .login-title {
+    font-size: 30px;
+  }
+}
+
+/* SMALL PHONES */
+@media (max-width: 480px) {
+  .login-page::before {
+    font-size: 25px;
+    padding: 35px 20px 15px;
+  }
+
+  .login-page::after {
+    padding: 0 20px 35px;
+    font-size: 14px;
+  }
+
+  .login-card {
+    padding: 40px 20px;
+  }
+
+  .login-title {
+    font-size: 27px;
+  }
+
+  .login-card input,
+  .login-card button {
+    padding: 14px;
+  }
+}
+
+/* REDUCED MOTION */
+@media (prefers-reduced-motion: reduce) {
+  .login-card input,
+  .login-card button {
+    transition: none;
+  }
 }
