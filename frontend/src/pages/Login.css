@@ -296,3 +296,59 @@
     transition: none;
   }
 }
+  
+/* LOGIN AND CREATE ACCOUNT OPTIONS 
+.auth-options {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 30px;
+  padding: 5px;
+  background: #eeeff4;
+  border-radius: 12px;
+}
+
+.login-card .auth-options .auth-option {
+  flex: 1;
+  width: auto;
+  padding: 12px 10px;
+  background: transparent;
+  color: #65708a;
+  border: none;
+  border-radius: 9px;
+  box-shadow: none;
+  font-size: 14px;
+  font-weight: 600;
+  transform: none;
+}
+
+.login-card .auth-options .auth-option.active {
+  background: #ffffff;
+  color: #2955db;
+  box-shadow: 0 2px 8px rgba(17, 29, 59, 0.08);
+}
+
+.login-card .auth-options .auth-option:hover {
+  transform: none;
+  box-shadow: 0 2px 8px rgba(17, 29, 59, 0.08);
+}
+
+.login-card .auth-options .auth-option:focus-visible {
+  outline: 3px solid #8baaff;
+  outline-offset: 2px;
+}*/
+
+/* SPACE BELOW FORGOT PASSWORD */
+.forgot-password {
+  margin: -5px 0 22px;
+  text-align: right;
+}
+
+/* BOTTOM ACCOUNT SWITCH */
+.auth-switch {
+  margin: 24px 0 0;
+  color: #65708a;
+  font-size: 14px;
+  text-align: center;
+  line-height: 1.7;
+}
+
