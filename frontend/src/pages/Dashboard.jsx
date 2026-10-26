@@ -1,6 +1,7 @@
 
 import React from "react";
-import "./dashboard.css";
+import "./Dashboard.css";
+import SearchBar from "../components/SearchBar";
 
 function Dashboard() {
   return (
@@ -12,17 +13,7 @@ function Dashboard() {
           Campus<span>Connect</span>
         </h2>
 
-        <form
-          className="header-search"
-          onSubmit={(e) => e.preventDefault()}
-        >
-          <input
-            type="text"
-            placeholder="Search tutors or courses..."
-            aria-label="Search tutors or courses"
-          />
-          <button type="submit">Search</button>
-        </form>
+        <SearchBar />
 
         <a href="#" className="header-profile">
           My Profile

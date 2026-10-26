@@ -1,0 +1,77 @@
+/* SEARCH RESULTS DROPDOWN (base search bar styles live in Dashboard.css) */
+.header-search {
+  position: relative;
+}
+
+.search-results {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  z-index: 10;
+  max-height: 360px;
+  overflow-y: auto;
+  padding: 8px;
+  background: #ffffff;
+  border: 1px solid #d8dce5;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(17, 29, 59, 0.1);
+}
+
+.search-group + .search-group {
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid #eef0f5;
+}
+
+.search-group-title {
+  margin: 6px 10px;
+  color: #8996ad;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.search-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 9px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.search-item:hover {
+  background: #eaf0ff;
+}
+
+.search-item-main {
+  color: #111d3b;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.search-item-sub {
+  color: #71809b;
+  font-size: 13px;
+}
+
+.search-rating {
+  margin-left: 4px;
+  color: #2955db;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.search-empty {
+  margin: 8px 10px;
+  color: #71809b;
+  font-size: 14px;
+}
+
+.search-highlight {
+  background: transparent;
+  color: #2955db;
+  font-weight: 700;
+}
