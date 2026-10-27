@@ -1,10 +1,12 @@
 
 require('dotenv').config()
 
+const catalogRoutes = require('./routes/catalog')
 const express = require('express')
 const cors = require('cors')
 const pool = require('./db')
 const authRoutes = require('./routes/auth')
+
 
 const app = express()
 const PORT = process.env.PORT || 5001
@@ -42,6 +44,8 @@ app.get('/api/db-test', async (req, res) => {
 
 // Authentication routes
 app.use('/api/auth', authRoutes)
+
+app.use('/api', catalogRoutes)
 
 app.listen(PORT, () => {
   console.log(`Backend running at http://localhost:${PORT}`)

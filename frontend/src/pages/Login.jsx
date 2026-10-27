@@ -3,29 +3,92 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import './login.css'
 
+const API_URL = 'http://localhost:5001/api/auth'
+
 function Login() {
   const navigate = useNavigate()
   const [activeForm, setActiveForm] = useState('login')
+  const [error, setError] = useState('')
+  const [message, setMessage] = useState('')
+  const [loading, setLoading] = useState(false)
 
   const isLogin = activeForm === 'login'
 
-  function handleSubmit(event) {
-  event.preventDefault()
+  async function handleSubmit(event) {
+    event.preventDefault()
 
-  if (!isLogin) {
-    const password = event.target.password.value
-    const confirmPassword = event.target.confirmPassword.value
+    setError('')
+    setMessage('')
+    setLoading(true)
 
-    if (password !== confirmPassword) {
-      alert('Passwords do not match.')
-      return
+    const formData = new FormData(event.currentTarget)
+
+    try {
+      const email = formData.get('email').trim().toLowerCase()
+      const password = formData.get('password')
+
+      if (!isLogin) {
+        const username = formData.get('username').trim()
+        const confirmPassword = formData.get('confirmPassword')
+
+        if (password !== confirmPassword) {
+          setError('Passwords do not match.')
+          return
+        }
+
+        const response = await fetch(`${API_URL}/register`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            username,
+            email,
+            password,
+          }),
+        })
+
+        const data = await response.json()
+
+        if (!response.ok) {
+          throw new Error(data.message || 'Registration failed.')
+        }
+
+        setActiveForm('login')
+        setMessage('Account created successfully! Please log in.')
+        return
+      }
+
+      const response = await fetch(`${API_URL}/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Login failed.')
+      }
+
+      sessionStorage.setItem('token', data.token)
+      sessionStorage.setItem('user', JSON.stringify(data.user))
+
+      navigate('/dashboard')
+    } catch (err) {
+      setError(
+        err.message ||
+        'Unable to connect to the backend. Please try again.'
+      )
+    } finally {
+      setLoading(false)
     }
-
-    alert('Account created successfully!')
   }
-
-  navigate('/dashboard')
-}
 
   return (
     <main className="login-page">
@@ -33,6 +96,18 @@ function Login() {
         <h1 className="login-title">
           {isLogin ? 'Welcome Back' : 'Create Your Account'}
         </h1>
+
+        {error && (
+          <p className="auth-error" role="alert">
+            {error}
+          </p>
+        )}
+
+        {message && (
+          <p className="auth-success" role="status">
+            {message}
+          </p>
+        )}
 
         <form onSubmit={handleSubmit}>
           {!isLogin && (
@@ -49,13 +124,29 @@ function Login() {
             </>
           )}
 
-          <label htmlFor="username">Username</label>
+          {!isLogin && (
+            <>
+              <label htmlFor="username">Username</label>
+              <input
+                id="username"
+                name="username"
+                type="text"
+                placeholder="Enter your username"
+                autoComplete="username"
+                minLength={3}
+                maxLength={30}
+                required
+              />
+            </>
+          )}
+
+          <label htmlFor="email">Email</label>
           <input
-            id="username"
-            name="username"
-            type="text"
-            placeholder="Enter your username"
-            autoComplete="username"
+            id="email"
+            name="email"
+            type="email"
+            placeholder="Enter your email"
+            autoComplete="email"
             required
           />
 
@@ -66,6 +157,7 @@ function Login() {
             type="password"
             placeholder="Enter your password"
             autoComplete={isLogin ? 'current-password' : 'new-password'}
+            minLength={isLogin ? undefined : 8}
             required
           />
 
@@ -96,8 +188,16 @@ function Login() {
             </p>
           )}
 
-          <button type="submit" className="submit-button">
-            {isLogin ? 'Login' : 'Create Account'}
+          <button
+            type="submit"
+            className="submit-button"
+            disabled={loading}
+          >
+            {loading
+              ? 'Please wait...'
+              : isLogin
+                ? 'Login'
+                : 'Create Account'}
           </button>
         </form>
 
@@ -111,6 +211,8 @@ function Login() {
             onClick={(event) => {
               event.preventDefault()
               setActiveForm(isLogin ? 'signup' : 'login')
+              setError('')
+              setMessage('')
             }}
           >
             {isLogin ? 'Create an Account' : 'Login'}
