@@ -83,6 +83,32 @@
   white-space: nowrap;
 }
 
+/* RIGHT SIDE OF HEADER (My Profile + Log Out, shared by both dashboards) */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.header-logout {
+  padding: 9px 16px;
+  background: transparent;
+  color: #111d3b;
+  border: 1px solid #d8dce5;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.header-logout:hover {
+  background: #f8faff;
+  border-color: #2955db;
+}
+
 /* MAIN CONTENT */
 .dashboard-main {
   max-width: 1250px;
@@ -286,6 +312,15 @@
     font-size: 13px;
   }
 
+  .header-actions {
+    gap: 12px;
+  }
+
+  .header-logout {
+    padding: 7px 12px;
+    font-size: 13px;
+  }
+
   .header-search {
     gap: 7px;
     padding-left: 12px;
@@ -341,6 +376,7 @@
 /* REDUCED MOTION */
 @media (prefers-reduced-motion: reduce) {
   .course-card,
+  .header-logout,
   .header-search button,
   .tutor-action {
     transition: none;
