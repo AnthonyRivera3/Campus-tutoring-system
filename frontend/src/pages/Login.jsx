@@ -1,13 +1,21 @@
 
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import './login.css'
+import './Login.css'
 
 const API_URL = 'http://localhost:5001/api/auth'
+
+// Account types for the Student / Tutor toggle. `value` matches the role
+// stored in the users table on the backend.
+const ROLE_OPTIONS = [
+  { value: 'STUDENT', label: 'Student' },
+  { value: 'TUTOR', label: 'Tutor' },
+]
 
 function Login() {
   const navigate = useNavigate()
   const [activeForm, setActiveForm] = useState('login')
+  const [role, setRole] = useState('STUDENT')
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
@@ -45,6 +53,7 @@ function Login() {
             username,
             email,
             password,
+            role,
           }),
         })
 
@@ -64,9 +73,11 @@ function Login() {
         headers: {
           'Content-Type': 'application/json',
         },
+        // The backend rejects the login if this doesn't match the account's role
         body: JSON.stringify({
           email,
           password,
+          role,
         }),
       })
 
@@ -79,7 +90,7 @@ function Login() {
       sessionStorage.setItem('token', data.token)
       sessionStorage.setItem('user', JSON.stringify(data.user))
 
-      navigate('/dashboard')
+      navigate(data.user.role === 'TUTOR' ? '/tutor-dashboard' : '/dashboard')
     } catch (err) {
       setError(
         err.message ||
@@ -108,6 +119,28 @@ function Login() {
             {message}
           </p>
         )}
+
+        <div
+          className="role-toggle"
+          role="radiogroup"
+          aria-label="Account type"
+        >
+          {ROLE_OPTIONS.map((option) => (
+            <button
+              key={option.value}
+              type="button"
+              role="radio"
+              aria-checked={role === option.value}
+              className={role === option.value ? 'role-option active' : 'role-option'}
+              onClick={() => {
+                setRole(option.value)
+                setError('')
+              }}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
 
         <form onSubmit={handleSubmit}>
           {!isLogin && (
@@ -196,8 +229,8 @@ function Login() {
             {loading
               ? 'Please wait...'
               : isLogin
-                ? 'Login'
-                : 'Create Account'}
+                ? `Login as ${role === 'TUTOR' ? 'Tutor' : 'Student'}`
+                : `Create ${role === 'TUTOR' ? 'Tutor' : 'Student'} Account`}
           </button>
         </form>
 

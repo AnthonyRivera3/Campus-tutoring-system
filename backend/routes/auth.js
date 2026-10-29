@@ -6,15 +6,25 @@ const pool = require('../db')
 
 const router = express.Router()
 
-// REGISTER a new student account
+// Account types a user can pick on the login/sign-up page
+const ROLES = ['STUDENT', 'TUTOR']
+
+// REGISTER a new student or tutor account
 router.post('/register', async (req, res) => {
   try {
-    const { username, email, password } = req.body
+    const { username, email, password, role = 'STUDENT' } = req.body
 
     // Validate required fields
     if (!username || !email || !password) {
       return res.status(400).json({
         message: 'Username, email, and password are required.',
+      })
+    }
+
+    // Only allow known roles so nobody can send something like 'ADMIN'
+    if (!ROLES.includes(role)) {
+      return res.status(400).json({
+        message: 'Account type must be STUDENT or TUTOR.',
       })
     }
 
@@ -49,12 +59,13 @@ router.post('/register', async (req, res) => {
     // Hash the password before storing it
     const passwordHash = await bcrypt.hash(password, 12)
 
-    // Public registration always creates a student account
+    // Anyone can sign up as a tutor for now. If that becomes a problem,
+    // tutor accounts could start out pending until they're approved.
     const result = await pool.query(
       `INSERT INTO users (username, email, password_hash, role)
-       VALUES ($1, $2, $3, 'STUDENT')
+       VALUES ($1, $2, $3, $4)
        RETURNING id, username, email, role, created_at`,
-      [cleanUsername, cleanEmail, passwordHash]
+      [cleanUsername, cleanEmail, passwordHash, role]
     )
 
     const user = result.rows[0]
@@ -75,7 +86,8 @@ router.post('/register', async (req, res) => {
 // LOGIN to an existing account
 router.post('/login', async (req, res) => {
   try {
-    const { email, password } = req.body
+    // role is the account type picked on the login page (optional)
+    const { email, password, role } = req.body
 
     if (!email || !password) {
       return res.status(400).json({
@@ -109,6 +121,15 @@ router.post('/login', async (req, res) => {
     if (!passwordMatches) {
       return res.status(401).json({
         message: 'Invalid email or password.',
+      })
+    }
+
+    // Checked after the password so this can't be used to look up
+    // whether an email belongs to a student or a tutor
+    if (role && role !== user.role) {
+      const accountType = user.role === 'TUTOR' ? 'tutor' : 'student'
+      return res.status(403).json({
+        message: `This is a ${accountType} account. Switch to ${accountType} login and try again.`,
       })
     }
 

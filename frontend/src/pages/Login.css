@@ -382,3 +382,37 @@
 }
 
 
+
+/* STUDENT / TUTOR TOGGLE */
+.role-toggle {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 25px;
+  padding: 5px;
+  background: #eeeff4;
+  border-radius: 12px;
+}
+
+/* Overrides the full-width blue .login-card button styles */
+.login-card .role-toggle .role-option {
+  flex: 1;
+  padding: 11px 10px;
+  background: transparent;
+  color: #65708a;
+  border-radius: 9px;
+  box-shadow: none;
+  font-size: 14px;
+  transform: none;
+}
+
+.login-card .role-toggle .role-option:hover {
+  background: rgba(255, 255, 255, 0.6);
+  box-shadow: none;
+  transform: none;
+}
+
+.login-card .role-toggle .role-option.active {
+  background: #ffffff;
+  color: #2955db;
+  box-shadow: 0 2px 8px rgba(17, 29, 59, 0.08);
+}
