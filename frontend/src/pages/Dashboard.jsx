@@ -1,7 +1,6 @@
-
-import React from "react";
 import "./Dashboard.css";
 import SearchBar from "../components/SearchBar";
+import LogoutButton from "../components/LogoutButton";
 
 function Dashboard() {
   return (
@@ -15,9 +14,12 @@ function Dashboard() {
 
         <SearchBar />
 
-        <a href="#" className="header-profile">
-          My Profile
-        </a>
+        <div className="header-actions">
+          <a href="#" className="header-profile">
+            My Profile
+          </a>
+          <LogoutButton />
+        </div>
       </header>
 
       {/* MAIN CONTENT */}
