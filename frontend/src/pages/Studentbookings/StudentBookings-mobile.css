@@ -1,0 +1,181 @@
+/* Responsive layout is kept separate so it is easy for the team to maintain. */
+@media (max-width: 1050px) {
+  .sb-department-tabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sb-content-grid {
+    grid-template-columns: minmax(230px, 0.9fr) minmax(0, 1.5fr);
+  }
+
+  .sb-courses-panel,
+  .sb-results-panel {
+    padding: 21px;
+  }
+}
+
+@media (max-width: 800px) {
+  .sb-main {
+    padding: 25px 5% 36px;
+  }
+
+  .sb-hero {
+    padding: 32px;
+  }
+
+  .sb-hero-mark {
+    width: 145px;
+    min-width: 145px;
+    height: 140px;
+  }
+
+  .sb-content-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sb-course-list {
+    max-height: 340px;
+  }
+}
+
+@media (max-width: 550px) {
+  .sb-header {
+    min-height: auto;
+    gap: 12px;
+    padding: 17px 18px;
+  }
+
+  .sb-brand {
+    font-size: 21px;
+  }
+
+  .sb-header-actions {
+    gap: 9px;
+  }
+
+  .sb-dashboard-link {
+    font-size: 12px;
+  }
+
+  .sb-main {
+    padding: 22px 18px 30px;
+  }
+
+  .sb-hero {
+    min-height: 0;
+    padding: 29px 24px;
+    border-radius: 16px;
+  }
+
+  .sb-hero h1 {
+    font-size: 30px;
+  }
+
+  .sb-hero p:last-child {
+    font-size: 14px;
+  }
+
+  .sb-hero-mark {
+    display: none;
+  }
+
+  .sb-departments {
+    margin-top: 30px;
+  }
+
+  .sb-section-title h2,
+  .sb-panel-heading h2,
+  .sb-results-heading h2 {
+    font-size: 20px;
+  }
+
+  .sb-section-title > span {
+    display: none;
+  }
+
+  .sb-department-tabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+  }
+
+  .sb-department-tab {
+    min-height: 70px;
+    padding: 10px;
+    gap: 8px;
+    font-size: 12px;
+  }
+
+  .sb-department-symbol {
+    width: 33px;
+    height: 33px;
+    font-size: 12px;
+  }
+
+  .sb-content-grid {
+    margin-top: 20px;
+    gap: 16px;
+  }
+
+  .sb-courses-panel,
+  .sb-results-panel {
+    padding: 20px 16px;
+    border-radius: 15px;
+  }
+
+  .sb-results-heading {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .sb-date-filter {
+    width: 100%;
+  }
+
+  .sb-slot-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sb-tutor-card {
+    padding: 15px;
+  }
+
+  .sb-tutor-course-label {
+    display: none;
+  }
+
+  .sb-empty-state {
+    min-height: 250px;
+    padding: 25px 13px;
+  }
+
+  .sb-booking-modal {
+    padding: 25px 19px;
+  }
+
+  .sb-modal-actions {
+    flex-direction: column-reverse;
+  }
+
+  .sb-modal-actions button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 365px) {
+  .sb-header-actions {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .sb-department-tabs {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 550px) {
+  .sb-times-caption {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+}
