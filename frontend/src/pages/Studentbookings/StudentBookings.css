@@ -784,3 +784,264 @@
 .student-bookings-page button:disabled:focus-visible {
   outline: 0;
 }
+
+/* Student-owned request history and cancellation, matched to dashboard colors */
+.sb-my-bookings {
+  margin-top: 34px;
+  padding: 26px;
+  background: #ffffff;
+  border: 1px solid #e0e4ec;
+  border-radius: 18px;
+  scroll-margin-top: 20px;
+}
+
+.sb-my-bookings-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.sb-my-bookings-heading h2 {
+  margin: 7px 0 8px;
+  font-size: 23px;
+  letter-spacing: -0.4px;
+}
+
+.sb-my-bookings-heading p:last-child {
+  margin: 0;
+  color: #71809b;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.sb-my-bookings-tabs {
+  display: flex;
+  gap: 8px;
+  margin-top: 24px;
+  padding-bottom: 13px;
+  border-bottom: 1px solid #e0e4ec;
+}
+
+.sb-my-bookings-tabs button {
+  padding: 10px 16px;
+  border: 1px solid #e0e4ec;
+  border-radius: 9px;
+  background: #ffffff;
+  color: #62708b;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.sb-my-bookings-tabs button.is-active {
+  border-color: #2955db;
+  background: #eaf0ff;
+  color: #2955db;
+}
+
+.sb-my-requests-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 15px;
+  margin-top: 18px;
+}
+
+.sb-my-request-card {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  min-width: 0;
+  padding: 19px;
+  border: 1px solid #e0e4ec;
+  border-radius: 14px;
+}
+
+.sb-request-topline,
+.sb-request-tutor,
+.sb-request-bottom {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+}
+
+.sb-request-topline {
+  justify-content: space-between;
+}
+
+.sb-request-tutor {
+  min-width: 0;
+  align-items: center;
+}
+
+.sb-request-avatar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
+  background: #eaf0ff;
+  color: #2955db;
+  font-size: 19px;
+  font-weight: 750;
+}
+
+.sb-request-tutor h3 {
+  margin: 0 0 4px;
+  font-size: 16px;
+}
+
+.sb-request-tutor p {
+  margin: 0;
+  color: #71809b;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.sb-request-status {
+  display: inline-block;
+  flex-shrink: 0;
+  padding: 6px 9px;
+  border-radius: 20px;
+  background: #eef2fa;
+  color: #4e5c75;
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.sb-request-status.is-pending {
+  background: #fff5dd;
+  color: #82601c;
+}
+
+.sb-request-status.is-accepted {
+  background: #e7f5eb;
+  color: #24623b;
+}
+
+.sb-request-status.is-cancelled {
+  background: #eef1f7;
+  color: #61708c;
+}
+
+.sb-request-status.is-declined {
+  background: #fff1ee;
+  color: #a44030;
+}
+
+.sb-request-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 18px;
+  color: #293958;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.sb-request-note {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 9px;
+  background: #f8faff;
+  color: #61708b;
+  font-size: 12px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+.sb-request-bottom {
+  margin-top: auto;
+  padding-top: 13px;
+  border-top: 1px solid #e0e4ec;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sb-request-bottom p {
+  margin: 0;
+  color: #71809b;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.sb-cancel-button,
+.sb-confirm-cancel-button {
+  flex-shrink: 0;
+  padding: 10px 12px;
+  border: 1px solid #b7c9f7;
+  border-radius: 9px;
+  background: #ffffff;
+  color: #2955db;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.sb-cancel-button:hover {
+  background: #eaf0ff;
+}
+
+.sb-confirm-cancel-button {
+  border-color: #b53a34;
+  background: #b53a34;
+  color: #ffffff;
+}
+
+.sb-confirm-cancel-button:hover {
+  background: #952d28;
+}
+
+.sb-cancel-button:disabled,
+.sb-confirm-cancel-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.sb-my-requests-empty,
+.sb-my-requests-message {
+  margin: 16px 0 0;
+  padding: 25px 18px;
+  background: #f8faff;
+  border-radius: 12px;
+  color: #71809b;
+  font-size: 13px;
+  line-height: 1.7;
+  text-align: center;
+}
+
+.sb-my-requests-empty strong {
+  display: block;
+  color: #111d3b;
+  font-size: 15px;
+}
+
+.sb-my-requests-empty p { margin: 8px 0 0; }
+
+.sb-requests-notice {
+  margin: 14px 0 0;
+  padding: 11px 13px;
+  border-radius: 9px;
+  background: #eaf0ff;
+  color: #244bc0;
+  font-size: 13px;
+}
+
+.sb-cancel-explainer {
+  margin: 0 0 17px;
+  color: #62708b;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.sb-cancel-modal-actions { margin-top: 20px; }
+
+.student-bookings-page .sb-cancel-button:focus-visible,
+.student-bookings-page .sb-confirm-cancel-button:focus-visible {
+  outline: 3px solid #2955db;
+  outline-offset: 3px;
+}

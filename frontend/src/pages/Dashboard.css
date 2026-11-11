@@ -391,3 +391,31 @@
     transition: none;
   }
 }
+
+/* Student dashboard shortcut to existing and requested bookings */
+.student-dashboard-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.student-dashboard-actions .tutor-action {
+  margin: 0;
+}
+
+.tutor-action-outline {
+  background: #ffffff;
+  border: 1px solid #b7c9f7;
+  color: #2955db;
+}
+
+.tutor-action-outline:hover {
+  background: #f8faff;
+  color: #1f46bd;
+}
+
+@media (max-width: 550px) {
+  .student-dashboard-actions {
+    flex-direction: column;
+  }
+}

@@ -1,0 +1,88 @@
+# CampusConnect — Student booking requests, history and cancellation
+
+This package extends the previously provided **live-API Student Bookings page**. It does **not** alter the tutor dashboard, catalog routes, authentication middleware, frontend API helper or `App.jsx`.
+
+## Files to copy into the EXISTING project
+
+Copy these files to the same relative paths in your current Campus-tutoring-system checkout:
+
+| File | What changed |
+| --- | --- |
+| `frontend/src/pages/Studentbookings/StudentBookings.jsx` | Added My Booking Requests, Upcoming/History filters, cancellation confirmation and live API calls |
+| `frontend/src/pages/Studentbookings/StudentBookings.css` | Request cards, status indicators, cancellation modal styling |
+| `frontend/src/pages/Studentbookings/StudentBookings-mobile.css` | Tablet/mobile request-management layouts |
+| `frontend/src/pages/Dashboard.jsx` | Added My Booking Requests shortcut to the existing tutor-discovery panel |
+| `frontend/src/pages/Dashboard.css` | Styles for that additional dashboard shortcut |
+| `backend/routes/sessionRequests.js` | **Preserves the two routes you supplied** and adds two student-owned request endpoints |
+| `backend/migrations/002_student_booking_cancellation.sql` | **New** one-time database migration for CANCELLED status and cancellation timestamp |
+
+The `backend/routes/sessionRequests.js` replacement is based on **the full file shared in this conversation**. If teammates have changed that file since it was shared, merge the new GET/PATCH student routes instead of overwriting their updates. Make a commit / backup before copying.
+
+## IMPORTANT: Database update first
+
+The current schema was not supplied, so this migration assumes your existing `session_requests.status` is a text/varchar column with the conventional check constraint `session_requests_status_check` (or no existing status check).
+
+1. Coordinate with teammates: Neon is a **shared live development database**. Don't run a migration without checking whether they already introduced another migration or a different status constraint.
+2. In Neon SQL Editor, inspect any CHECK constraints by running:
+
+   ```sql
+   SELECT conname, pg_get_constraintdef(oid) AS definition
+   FROM pg_constraint
+   WHERE conrelid = 'public.session_requests'::regclass
+     AND contype = 'c';
+   ```
+
+3. If the status constraint is `session_requests_status_check` (or no status constraint exists), review and run the contents of `backend/migrations/002_student_booking_cancellation.sql` **one time** in Neon SQL Editor. It preserves existing requests, adds nullable `cancelled_at`, and allows the `CANCELLED` status.
+4. If the status constraint has a *different name* or the column is a PostgreSQL enum, **do not force-run an altered migration**. Share your existing `001_tutor_scheduling.sql` and the result of the CHECK-constraint query so the migration can be adjusted safely. The supplied script intentionally aborts when it detects a custom status CHECK.
+
+Do not run the entire original schema-creation file again against the shared database. Do not paste your DATABASE_URL or JWT_SECRET.
+
+## New endpoints — mounted under `/api`
+
+| Method | Route | Authentication | Result |
+| --- | --- | --- | --- |
+| `GET` | `/api/student/session-requests` | student JWT | Current student's own requests, including tutor/course names, scheduled times, notes and status |
+| `PATCH` | `/api/student/session-requests/:id/cancel` | student JWT | Cancels the **current student's** PENDING or ACCEPTED request only before its start time |
+
+The original `GET /api/tutors/:id/availability` and `POST /api/session-requests` routes are unchanged. Existing `app.use('/api', sessionRequestRoutes)` in `server.js` already mounts these new routes: **no `server.js` changes**. The frontend uses your existing `apiRequest()` helper for authentication.
+
+### Behavior and cancellation rules
+
+- **Upcoming**: pending/accepted requests for future session times. Students can cancel either kind. Pending means tutor approval is still required; Accepted means the tutor confirmed it.
+- **History**: cancelled, declined and past sessions, retained for reference. Cancelling does **not** delete the database record.
+- Once the session has **started**, it cannot be cancelled through this endpoint. Declined/cancelled requests also cannot be cancelled again.
+- Accepted cancellations remove the appointment from the tutor's `GET /api/tutor/sessions` schedule and free the time through the existing availability endpoint, since those endpoints look only for `ACCEPTED` requests. The tutor sees these changes on refresh; **real-time push notifications are not included**.
+- The tutor code previously auto-declined competing requests upon accepting a booking. Cancelling an accepted booking does **not** automatically restore those old declined requests.
+- Authentication and student ownership are enforced by the backend, not just hidden buttons in the browser. A student cannot modify another student's request.
+
+## Start locally
+
+Open two VS Code terminals from the project root:
+
+```bash
+cd backend
+npm start
+```
+
+```bash
+cd frontend
+npm run dev
+```
+
+No new npm dependencies are required. Existing `App.jsx` already has the `/student-bookings` route.
+
+## Manual testing checklist
+
+1. Sign in as a **student**; click **My Booking Requests** from the student dashboard. You should see an empty state or your existing requests.
+2. Sign in as a tutor and add a future availability slot for a course the tutor teaches.
+3. Sign in as a student and request that slot. Check **Upcoming**: the new request should display as **Awaiting tutor**.
+4. Cancel the **pending** request. Verify it moves to **History → Cancelled**, and disappears from the tutor's pending requests (after refresh).
+5. Request another future slot and have the tutor accept it. Student should see **Confirmed** in Upcoming.
+6. Cancel that **accepted** booking. It should move to History; the slot should be available again on refresh and no longer appear in the tutor's accepted sessions.
+7. Verify the API rejects cancellation of a past session or an id belonging to a different student (use separate test accounts, never another student's real data).
+
+## Known constraints
+
+- Department matching is still inferred from course-code prefixes, as in the prior version.
+- Booking history loads all of the student's requests; pagination isn't needed for the current small school project but can be added later.
+- These changes are reviewed statically, not tested against your private Neon schema; run the migration checks and the end-to-end test above before merging to your team's main branch.

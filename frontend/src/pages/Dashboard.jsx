@@ -85,9 +85,14 @@ function Dashboard() {
             Explore tutors, compare subjects, and find someone who fits your
             learning needs.
           </p>
-          <Link to="/student-bookings" className="tutor-action">
-            Explore Tutors →
-          </Link>
+          <div className="student-dashboard-actions">
+            <Link to="/student-bookings" className="tutor-action">
+              Explore Tutors →
+            </Link>
+            <Link to="/student-bookings#my-bookings" className="tutor-action tutor-action-outline">
+              My Booking Requests →
+            </Link>
+          </div>
         </section>
 
         <footer className="dashboard-footer">

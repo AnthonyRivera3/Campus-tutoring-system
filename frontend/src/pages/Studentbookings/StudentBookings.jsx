@@ -19,6 +19,8 @@ const DEPARTMENTS = [
 // GET  /api/tutors                  -> [{ id, name, courses: ["CSC 211"] }]
 // GET  /api/tutors/:id/availability -> [{ id, starts_at, ends_at }]
 // POST /api/session-requests        -> { slot_id, course_id, note } (student JWT)
+// GET  /api/student/session-requests -> logged-in student's request history
+// PATCH /api/student/session-requests/:id/cancel -> cancel pending/accepted request
 
 function normalizeCourses(rows) {
   if (!Array.isArray(rows)) return [];
@@ -91,6 +93,12 @@ function formatDay(date) {
   }).format(date);
 }
 
+function formatRequestDate(date) {
+  return new Intl.DateTimeFormat(undefined, {
+    weekday: "short", month: "short", day: "numeric", year: "numeric",
+  }).format(date);
+}
+
 function formatTime(date) {
   return new Intl.DateTimeFormat(undefined, {
     hour: "numeric", minute: "2-digit",
@@ -154,6 +162,82 @@ function TutorCard({ tutor, selectedDate, requestedIds, onSelectSlot }) {
   );
 }
 
+
+const ACTIVE_REQUEST_STATUSES = new Set(["PENDING", "ACCEPTED"]);
+
+function normalizeRequests(rows) {
+  if (!Array.isArray(rows)) return [];
+  return rows
+    .filter((row) => row && Number.isInteger(Number(row.id)))
+    .map((row) => ({
+      id: Number(row.id),
+      slotId: Number(row.slot_id),
+      status: String(row.status || "").toUpperCase(),
+      tutorName: String(row.tutor_name || "Tutor"),
+      courseCode: row.course_code ? String(row.course_code) : "",
+      courseTitle: row.course_title ? String(row.course_title) : "",
+      note: row.note ? String(row.note) : "",
+      startsAt: new Date(row.starts_at),
+      endsAt: new Date(row.ends_at),
+    }))
+    .filter((row) =>
+      !Number.isNaN(row.startsAt.getTime()) &&
+      !Number.isNaN(row.endsAt.getTime())
+    );
+}
+
+function StudentRequestCard({ request, onCancel, cancelling }) {
+  const isActive = ACTIVE_REQUEST_STATUSES.has(request.status) && request.startsAt > new Date();
+  const displayStatus = {
+    PENDING: "Awaiting tutor",
+    ACCEPTED: "Confirmed",
+    DECLINED: "Declined",
+    CANCELLED: "Cancelled",
+  }[request.status] || request.status;
+
+  return (
+    <article className="sb-my-request-card">
+      <div className="sb-request-topline">
+        <div className="sb-request-tutor">
+          <span className="sb-request-avatar" aria-hidden="true">
+            {request.tutorName.trim().charAt(0).toUpperCase() || "T"}
+          </span>
+          <div>
+            <h3>{request.tutorName}</h3>
+            <p>{request.courseCode || "Tutoring session"}{request.courseTitle ? ` · ${request.courseTitle}` : ""}</p>
+          </div>
+        </div>
+        <span className={`sb-request-status is-${request.status.toLowerCase()}`}>
+          {displayStatus}
+        </span>
+      </div>
+      <div className="sb-request-meta">
+        <span><span aria-hidden="true">📅</span> {formatRequestDate(request.startsAt)}</span>
+        <span><span aria-hidden="true">🕒</span> {formatTime(request.startsAt)} – {formatTime(request.endsAt)}</span>
+      </div>
+      {request.note && <p className="sb-request-note">Your note: {request.note}</p>}
+      <div className="sb-request-bottom">
+        <p>
+          {request.status === "PENDING" && (isActive ? "The tutor has not accepted your request yet." : "This request's scheduled time has passed.")}
+          {request.status === "ACCEPTED" && (isActive ? "Your tutor confirmed this session." : "Your tutor confirmed this session; the scheduled time has passed.")}
+          {request.status === "DECLINED" && "This request was not accepted."}
+          {request.status === "CANCELLED" && "You cancelled this booking request."}
+        </p>
+        {isActive && (
+          <button
+            type="button"
+            className="sb-cancel-button"
+            onClick={() => onCancel(request)}
+            disabled={cancelling}
+          >
+            {request.status === "ACCEPTED" ? "Cancel confirmed session" : "Cancel request"}
+          </button>
+        )}
+      </div>
+    </article>
+  );
+}
+
 function StudentBookings() {
   const [searchParams, setSearchParams] = useSearchParams();
   const requestedDepartment = searchParams.get("department") || "all";
@@ -173,13 +257,94 @@ function StudentBookings() {
   const [tutorsError, setTutorsError] = useState("");
   const [tutorsReload, setTutorsReload] = useState(0);
   const [selectedDate, setSelectedDate] = useState("");
-  const [requestedIds, setRequestedIds] = useState(() => new Set());
+  // A separate API call persists request history across reloads and devices.
+  const [requests, setRequests] = useState([]);
+  const [requestsStatus, setRequestsStatus] = useState("loading");
+  const [requestsError, setRequestsError] = useState("");
+  const [requestsReload, setRequestsReload] = useState(0);
+  const [requestsTab, setRequestsTab] = useState("upcoming");
+  const [cancelTarget, setCancelTarget] = useState(null);
+  const [cancelSubmitting, setCancelSubmitting] = useState(false);
+  const [cancelError, setCancelError] = useState("");
+  const [requestsNotice, setRequestsNotice] = useState("");
 
   const [selection, setSelection] = useState(null);
   const [note, setNote] = useState("");
   const [bookingStatus, setBookingStatus] = useState("idle");
   const [bookingError, setBookingError] = useState("");
   const dialogRef = useRef(null);
+  const cancelDialogRef = useRef(null);
+
+  useEffect(() => {
+    let active = true;
+    setRequestsStatus("loading");
+    setRequestsError("");
+    apiRequest("/student/session-requests")
+      .then((rows) => {
+        if (!active) return;
+        setRequests(normalizeRequests(rows));
+        setRequestsStatus("ready");
+      })
+      .catch((error) => {
+        if (!active) return;
+        setRequestsError(error.message || "Unable to load your booking requests.");
+        setRequestsStatus("error");
+      });
+    return () => { active = false; };
+  }, [requestsReload]);
+
+  useEffect(() => {
+    // The dashboard's "My booking requests" link navigates to this section.
+    if (window.location.hash === "#my-bookings") {
+      window.requestAnimationFrame(() => {
+        document.getElementById("my-bookings")?.scrollIntoView();
+      });
+    }
+  }, []);
+
+  const requestedIds = useMemo(() => new Set(
+    requests
+      .filter((request) => ACTIVE_REQUEST_STATUSES.has(request.status))
+      .map((request) => request.slotId)
+  ), [requests]);
+
+  const now = Date.now();
+  const upcomingRequests = requests
+    .filter((request) => ACTIVE_REQUEST_STATUSES.has(request.status) && request.startsAt.getTime() > now)
+    .sort((a, b) => a.startsAt - b.startsAt);
+  const pastRequests = requests
+    .filter((request) => !ACTIVE_REQUEST_STATUSES.has(request.status) || request.startsAt.getTime() <= now)
+    .sort((a, b) => b.startsAt - a.startsAt);
+  const visibleRequests = requestsTab === "upcoming" ? upcomingRequests : pastRequests;
+
+  function openCancellation(request) {
+    setCancelTarget(request);
+    setCancelError("");
+  }
+
+  async function confirmCancellation() {
+    if (!cancelTarget || cancelSubmitting) return;
+    setCancelSubmitting(true);
+    setCancelError("");
+    try {
+      await apiRequest(`/student/session-requests/${cancelTarget.id}/cancel`, {
+        method: "PATCH",
+      });
+      const cancelledId = cancelTarget.id;
+      setRequests((current) => current.map((request) =>
+        request.id === cancelledId ? { ...request, status: "CANCELLED" } : request
+      ));
+      setRequestsNotice("Your booking request was cancelled successfully.");
+      setCancelTarget(null);
+      setRequestsReload((count) => count + 1);
+      // An accepted cancellation frees this tutor's slot for other students.
+      setTutorsReload((count) => count + 1);
+    } catch (error) {
+      setCancelError(error.message || "Unable to cancel this request.");
+    } finally {
+      setCancelSubmitting(false);
+    }
+  }
 
   useEffect(() => {
     let active = true;
@@ -260,6 +425,16 @@ function StudentBookings() {
   }, [selectedCourse?.id, selectedCourse?.code, tutorsReload]);
 
   useEffect(() => {
+    if (!cancelTarget) return;
+    cancelDialogRef.current?.focus();
+    function onKeyDown(event) {
+      if (event.key === "Escape" && !cancelSubmitting) setCancelTarget(null);
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [cancelTarget, cancelSubmitting]);
+
+  useEffect(() => {
     if (!selection) return;
     dialogRef.current?.focus();
     function onKeyDown(event) {
@@ -309,7 +484,8 @@ function StudentBookings() {
           note: note.trim().slice(0, 500),
         },
       });
-      setRequestedIds((previous) => new Set([...previous, selection.slot.id]));
+      // Re-fetch the student's persistent requests after the successful POST.
+      setRequestsReload((count) => count + 1);
       setBookingStatus("success");
     } catch (error) {
       setBookingError(error.message || "Unable to send your request.");
@@ -329,6 +505,7 @@ function StudentBookings() {
           Campus<span>Connect</span>
         </Link>
         <div className="sb-header-actions">
+          <a className="sb-dashboard-link" href="#my-bookings">My requests</a>
           <Link className="sb-dashboard-link" to="/dashboard">← Student dashboard</Link>
           <LogoutButton />
         </div>
@@ -352,6 +529,60 @@ function StudentBookings() {
             <strong>Learn together.</strong>
             <small>One session at a time.</small>
           </div>
+        </section>
+
+        <section id="my-bookings" className="sb-my-bookings" aria-labelledby="sb-my-bookings-heading">
+          <div className="sb-my-bookings-heading">
+            <div>
+              <p className="sb-step-label">MY BOOKING REQUESTS</p>
+              <h2 id="sb-my-bookings-heading">Manage your sessions</h2>
+              <p>Track tutor responses and cancel an upcoming request, even after your tutor accepts it.</p>
+            </div>
+            <button
+              type="button"
+              className="sb-refresh-button"
+              disabled={requestsStatus === "loading"}
+              onClick={() => setRequestsReload((value) => value + 1)}
+            >Refresh requests</button>
+          </div>
+          <div className="sb-my-bookings-tabs" role="group" aria-label="Booking request filters">
+            <button type="button" className={requestsTab === "upcoming" ? "is-active" : ""}
+              aria-pressed={requestsTab === "upcoming"} onClick={() => setRequestsTab("upcoming")}>
+              Upcoming ({upcomingRequests.length})
+            </button>
+            <button type="button" className={requestsTab === "history" ? "is-active" : ""}
+              aria-pressed={requestsTab === "history"} onClick={() => setRequestsTab("history")}>
+              History ({pastRequests.length})
+            </button>
+          </div>
+          {requestsNotice && <p className="sb-requests-notice" role="status">{requestsNotice}</p>}
+          {requestsStatus === "loading" && <p className="sb-my-requests-message" role="status">Loading your booking requests…</p>}
+          {requestsStatus === "error" && (
+            <div className="sb-inline-error" role="alert">
+              <p>{requestsError}</p>
+              <button type="button" onClick={() => setRequestsReload((value) => value + 1)}>Try again</button>
+            </div>
+          )}
+          {requestsStatus === "ready" && visibleRequests.length === 0 && (
+            <div className="sb-my-requests-empty">
+              <strong>{requestsTab === "upcoming" ? "No upcoming bookings" : "No booking history yet"}</strong>
+              <p>{requestsTab === "upcoming"
+                ? "When you request a tutoring session, you can track it here."
+                : "Cancelled, declined, and completed-date requests will appear here."}</p>
+            </div>
+          )}
+          {requestsStatus === "ready" && visibleRequests.length > 0 && (
+            <div className="sb-my-requests-grid">
+              {visibleRequests.map((request) => (
+                <StudentRequestCard
+                  key={request.id}
+                  request={request}
+                  onCancel={openCancellation}
+                  cancelling={cancelSubmitting}
+                />
+              ))}
+            </div>
+          )}
         </section>
 
         <section className="sb-departments" aria-label="Choose a department">
@@ -528,7 +759,16 @@ function StudentBookings() {
                   <div><dt>Time</dt><dd>{formatDay(selection.slot.startsAt)}, {formatTime(selection.slot.startsAt)}</dd></div>
                 </dl>
                 <div className="sb-modal-actions sb-modal-actions-success">
-                  <button type="button" className="sb-primary-button" onClick={closeBooking}>Done</button>
+                  <button
+                    type="button"
+                    className="sb-primary-button"
+                    onClick={() => {
+                      setSelection(null);
+                      setRequestsTab("upcoming");
+                      document.getElementById("my-bookings")?.scrollIntoView({ behavior: "smooth" });
+                    }}
+                  >View my requests</button>
+                  <button type="button" className="sb-secondary-button" onClick={closeBooking}>Done</button>
                 </div>
               </>
             ) : (
@@ -554,7 +794,7 @@ function StudentBookings() {
                 />
                 <div className="sb-character-count">{note.length}/500 characters</div>
                 <p className="sb-booking-notice">
-                  Response to tutoring session request will be sent VIA Email.
+                  This sends a request to the tutor. Your session is only booked after they accept it.
                 </p>
                 {bookingError && <p className="sb-booking-error" role="alert">{bookingError}</p>}
                 <div className="sb-modal-actions">
@@ -565,6 +805,38 @@ function StudentBookings() {
                 </div>
               </form>
             )}
+          </section>
+        </div>
+      )}
+
+      {cancelTarget && (
+        <div className="sb-modal-backdrop" onMouseDown={(event) => {
+          if (event.target === event.currentTarget && !cancelSubmitting) setCancelTarget(null);
+        }}>
+          <section className="sb-booking-modal" role="dialog" aria-modal="true"
+            aria-labelledby="sb-cancel-dialog-title" ref={cancelDialogRef} tabIndex={-1}>
+            <button type="button" className="sb-modal-close" aria-label="Close cancellation confirmation"
+              disabled={cancelSubmitting} onClick={() => setCancelTarget(null)}>×</button>
+            <p className="sb-step-label">CANCEL BOOKING</p>
+            <h2 id="sb-cancel-dialog-title">Cancel this {cancelTarget.status === "ACCEPTED" ? "confirmed session" : "request"}?</h2>
+            <p className="sb-cancel-explainer">
+              {cancelTarget.status === "ACCEPTED"
+                ? "This session has already been accepted by the tutor. Cancelling it will release the time for someone else."
+                : "The tutor will no longer be able to accept this request."}
+            </p>
+            <dl className="sb-booking-details">
+              <div><dt>Tutor</dt><dd>{cancelTarget.tutorName}</dd></div>
+              <div><dt>Session</dt><dd>{formatRequestDate(cancelTarget.startsAt)}, {formatTime(cancelTarget.startsAt)} – {formatTime(cancelTarget.endsAt)}</dd></div>
+            </dl>
+            {cancelError && <p className="sb-booking-error" role="alert">{cancelError}</p>}
+            <div className="sb-modal-actions sb-cancel-modal-actions">
+              <button type="button" className="sb-secondary-button" disabled={cancelSubmitting}
+                onClick={() => setCancelTarget(null)}>Keep booking</button>
+              <button type="button" className="sb-confirm-cancel-button" disabled={cancelSubmitting}
+                onClick={confirmCancellation}>
+                {cancelSubmitting ? "Cancelling…" : "Yes, cancel booking"}
+              </button>
+            </div>
           </section>
         </div>
       )}

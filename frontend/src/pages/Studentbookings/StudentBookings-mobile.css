@@ -179,3 +179,23 @@
     gap: 6px;
   }
 }
+
+/* Student request management responsive adjustments */
+@media (max-width: 950px) {
+  .sb-my-requests-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 550px) {
+  .sb-my-bookings { margin-top: 22px; padding: 19px 16px; border-radius: 15px; }
+  .sb-my-bookings-heading { flex-direction: column; gap: 8px; }
+  .sb-my-bookings-heading h2 { font-size: 20px; }
+  .sb-my-bookings-tabs button { flex: 1; padding: 10px 8px; }
+  .sb-my-request-card { padding: 15px; }
+  .sb-request-topline { flex-wrap: wrap; }
+  .sb-request-status { margin-left: 51px; }
+  .sb-request-bottom { flex-direction: column; align-items: stretch; gap: 10px; }
+  .sb-cancel-button { width: 100%; }
+  .sb-cancel-modal-actions { flex-direction: column-reverse; }
+  .sb-cancel-modal-actions button { width: 100%; }
+  .sb-header-actions { flex-wrap: wrap; justify-content: flex-end; }
+}
