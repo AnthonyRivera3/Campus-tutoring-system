@@ -1,4 +1,3 @@
-
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import './Login.css'
@@ -103,6 +102,59 @@ function Login() {
 
   return (
     <main className="login-page">
+      <aside className="login-hero">
+        <div className="login-logo">
+          <span className="login-logo-icon">▮▮</span> CampusConnect
+        </div>
+        <p className="login-tagline">PEER TUTORING, MADE SIMPLE</p>
+        <h2 className="login-heading">
+          Learn together.
+          <br />
+          <span className="login-accent">Go further.</span>
+        </h2>
+        <p className="login-description">
+          Connect with knowledgeable peer tutors who understand your
+          courses, your campus, and where you want to go.
+        </p>
+
+        <ul className="login-features">
+          <li>✓ Verified peer tutors</li>
+          <li>✓ Book sessions in minutes</li>
+          <li>✓ Help for every course</li>
+        </ul>
+
+        <div className="login-badge">
+          <div className="login-avatars">
+            <span>AB</span>
+            <span>JK</span>
+            <span>MS</span>
+          </div>
+          <p>
+            <strong>1,200+ sessions</strong>
+            <br />
+            completed this semester
+          </p>
+        </div>
+
+        <svg
+          className="login-hero-art"
+          viewBox="0 0 200 160"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="3"
+          strokeLinejoin="round"
+          strokeLinecap="round"
+          aria-hidden="true"
+        >
+          <path d="M100 10 L20 55 H180 Z" />
+          <circle cx="100" cy="38" r="6" />
+          <rect x="30" y="55" width="140" height="10" />
+          <path d="M40 65V130 M70 65V130 M100 65V130 M130 65V130 M160 65V130" />
+          <rect x="25" y="130" width="150" height="10" />
+          <rect x="15" y="140" width="170" height="10" />
+        </svg>
+      </aside>
+
       <section className="login-card">
         <h1 className="login-title">
           {isLogin ? 'Welcome Back' : 'Create Your Account'}
