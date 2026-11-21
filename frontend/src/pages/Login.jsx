@@ -1,13 +1,20 @@
-
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import './login.css'
+import './Login.css'
 
 const API_URL = 'http://localhost:5001/api/auth'
+
+// Account types for the Student / Tutor toggle. `value` matches the role
+// stored in the users table on the backend.
+const ROLE_OPTIONS = [
+  { value: 'STUDENT', label: 'Student' },
+  { value: 'TUTOR', label: 'Tutor' },
+]
 
 function Login() {
   const navigate = useNavigate()
   const [activeForm, setActiveForm] = useState('login')
+  const [role, setRole] = useState('STUDENT')
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
@@ -45,6 +52,7 @@ function Login() {
             username,
             email,
             password,
+            role,
           }),
         })
 
@@ -64,9 +72,11 @@ function Login() {
         headers: {
           'Content-Type': 'application/json',
         },
+        // The backend rejects the login if this doesn't match the account's role
         body: JSON.stringify({
           email,
           password,
+          role,
         }),
       })
 
@@ -79,7 +89,7 @@ function Login() {
       sessionStorage.setItem('token', data.token)
       sessionStorage.setItem('user', JSON.stringify(data.user))
 
-      navigate('/dashboard')
+      navigate(data.user.role === 'TUTOR' ? '/tutor-dashboard' : '/dashboard')
     } catch (err) {
       setError(
         err.message ||
@@ -92,6 +102,59 @@ function Login() {
 
   return (
     <main className="login-page">
+      <aside className="login-hero">
+        <div className="login-logo">
+          <span className="login-logo-icon">▮▮</span> CampusConnect
+        </div>
+        <p className="login-tagline">PEER TUTORING, MADE SIMPLE</p>
+        <h2 className="login-heading">
+          Learn together.
+          <br />
+          <span className="login-accent">Go further.</span>
+        </h2>
+        <p className="login-description">
+          Connect with knowledgeable peer tutors who understand your
+          courses, your campus, and where you want to go.
+        </p>
+
+        <ul className="login-features">
+          <li>✓ Verified peer tutors</li>
+          <li>✓ Book sessions in minutes</li>
+          <li>✓ Help for every course</li>
+        </ul>
+
+        <div className="login-badge">
+          <div className="login-avatars">
+            <span>AB</span>
+            <span>JK</span>
+            <span>MS</span>
+          </div>
+          <p>
+            <strong>1,200+ sessions</strong>
+            <br />
+            completed this semester
+          </p>
+        </div>
+
+        <svg
+          className="login-hero-art"
+          viewBox="0 0 200 160"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="3"
+          strokeLinejoin="round"
+          strokeLinecap="round"
+          aria-hidden="true"
+        >
+          <path d="M100 10 L20 55 H180 Z" />
+          <circle cx="100" cy="38" r="6" />
+          <rect x="30" y="55" width="140" height="10" />
+          <path d="M40 65V130 M70 65V130 M100 65V130 M130 65V130 M160 65V130" />
+          <rect x="25" y="130" width="150" height="10" />
+          <rect x="15" y="140" width="170" height="10" />
+        </svg>
+      </aside>
+
       <section className="login-card">
         <h1 className="login-title">
           {isLogin ? 'Welcome Back' : 'Create Your Account'}
@@ -108,6 +171,28 @@ function Login() {
             {message}
           </p>
         )}
+
+        <div
+          className="role-toggle"
+          role="radiogroup"
+          aria-label="Account type"
+        >
+          {ROLE_OPTIONS.map((option) => (
+            <button
+              key={option.value}
+              type="button"
+              role="radio"
+              aria-checked={role === option.value}
+              className={role === option.value ? 'role-option active' : 'role-option'}
+              onClick={() => {
+                setRole(option.value)
+                setError('')
+              }}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
 
         <form onSubmit={handleSubmit}>
           {!isLogin && (
@@ -196,8 +281,8 @@ function Login() {
             {loading
               ? 'Please wait...'
               : isLogin
-                ? 'Login'
-                : 'Create Account'}
+                ? `Login as ${role === 'TUTOR' ? 'Tutor' : 'Student'}`
+                : `Create ${role === 'TUTOR' ? 'Tutor' : 'Student'} Account`}
           </button>
         </form>
 

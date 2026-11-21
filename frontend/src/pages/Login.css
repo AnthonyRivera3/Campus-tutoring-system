@@ -1,4 +1,3 @@
-
 /* MAIN LOGIN PAGE */
 .login-page {
   min-height: 100vh;
@@ -37,42 +36,171 @@
     100% 100%;
 }
 
-/* LEFT SIDE: BRAND AND HEADING */
-.login-page::before {
-  content: "CampusConnect\A\A Learn together.\A Go further.";
-  white-space: pre-line;
-
+/* LEFT SIDE: HERO PANEL */
+.login-hero {
   grid-column: 1;
-  grid-row: 2;
+  grid-row: 1 / -1;
 
-  padding: 0 10%;
+  position: relative;
+  overflow: hidden;
 
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  padding: 0 9%;
   color: #ffffff;
-  font-family: "Segoe UI", Arial, sans-serif;
-  font-size: clamp(30px, 3.3vw, 48px);
-  font-weight: 600;
-  line-height: 1.25;
-  letter-spacing: -1px;
+}
 
+/* soft glow behind the text */
+.login-hero::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 30%;
+  width: 600px;
+  height: 600px;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(
+    circle,
+    rgba(100, 145, 255, 0.22) 0%,
+    transparent 65%
+  );
+  pointer-events: none;
+}
+
+.login-hero > * {
   position: relative;
   z-index: 1;
 }
 
-/* LEFT SIDE: DESCRIPTION */
-.login-page::after {
-  content: "Connect with knowledgeable peer tutors who understand your courses, your campus, and where you want to go.";
+/* school icon, bottom right of the left panel */
+.login-hero > .login-hero-art {
+  position: absolute;
+  right: 6%;
+  bottom: 6%;
+  width: clamp(120px, 14vw, 200px);
 
-  grid-column: 1;
-  grid-row: 3;
+  color: #6491ff;
+  opacity: 0.25;
+  pointer-events: none;
+  z-index: 0;
+}
 
-  max-width: 500px;
-  padding: 30px 10% 0;
+.login-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: clamp(24px, 6vh, 56px);
+
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.login-logo-icon {
+  color: #6491ff;
+  font-size: 19px;
+  letter-spacing: -2px;
+}
+
+.login-tagline {
+  margin: 0 0 14px;
+
+  color: #6491ff;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 3px;
+}
+
+.login-heading {
+  margin: 0;
+
+  font-size: clamp(38px, min(4.9vw, 8.3vh), 68px);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -2px;
+}
+
+.login-accent {
+  background: linear-gradient(90deg, #6491ff, #9fc0ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.login-description {
+  max-width: 480px;
+  margin: 20px 0 20px;
 
   color: #c4d4f5;
-  font-family: "Segoe UI", Arial, sans-serif;
-  font-size: 18px;
-  font-weight: 400;
-  line-height: 1.8;
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+.login-features {
+  margin: 0 0 24px;
+  padding: 0;
+  list-style: none;
+
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  color: #e3ebff;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.login-badge {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  width: fit-content;
+  padding: 10px 18px 10px 12px;
+
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+}
+
+.login-badge p {
+  margin: 0;
+
+  color: #9fb4e6;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.login-badge strong {
+  color: #ffffff;
+  font-size: 15px;
+}
+
+.login-avatars {
+  display: flex;
+}
+
+.login-avatars span {
+  width: 34px;
+  height: 34px;
+  margin-left: -9px;
+
+  display: grid;
+  place-items: center;
+
+  border: 2px solid #111d3b;
+  border-radius: 50%;
+  background: #dbe6ff;
+
+  color: #111d3b;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.login-avatars span:first-child {
+  margin-left: 0;
 }
 
 /* RIGHT SIDE: LOGIN CONTAINER */
@@ -87,7 +215,7 @@
   width: 100%;
   max-width: 520px;
   margin: auto;
-  padding: 60px 50px;
+  padding: 28px 50px;
 
   box-sizing: border-box;
   background: transparent;
@@ -219,6 +347,22 @@
   text-decoration: underline;
 }
 
+/* SHORT SCREENS: tighten the left side so nothing scrolls */
+@media (max-height: 720px) {
+  .login-logo {
+    margin-bottom: 22px;
+  }
+
+  .login-description {
+    font-size: 15px;
+    margin: 14px 0 14px;
+  }
+
+  .login-features {
+    margin-bottom: 16px;
+  }
+}
+
 /* TABLET AND MOBILE */
 @media (max-width: 768px) {
   .login-page {
@@ -227,27 +371,35 @@
     background: #f8f6f2;
   }
 
-  .login-page::before {
+  .login-hero {
     grid-column: 1;
-    grid-row: 1;
+    grid-row: 1 / 3;
 
-    padding: 45px 25px 15px;
+    padding: 45px 25px;
     background: #111d3b;
-
-    font-size: 30px;
   }
 
-  .login-page::after {
-    grid-column: 1;
-    grid-row: 2;
+  .login-logo {
+    margin-bottom: 30px;
+    font-size: 20px;
+  }
 
+  .login-description {
     max-width: none;
-    margin: 0;
-    padding: 0 25px 45px;
-
-    background: #111d3b;
+    margin-bottom: 0;
     font-size: 15px;
     line-height: 1.6;
+  }
+
+  .login-badge,
+  .login-features,
+  .login-hero-art {
+    display: none;
+  }
+
+  .login-heading {
+    font-size: 34px;
+    letter-spacing: -1px;
   }
 
   .login-card {
@@ -265,13 +417,15 @@
 
 /* SMALL PHONES */
 @media (max-width: 480px) {
-  .login-page::before {
-    font-size: 25px;
-    padding: 35px 20px 15px;
+  .login-hero {
+    padding: 35px 20px;
   }
 
-  .login-page::after {
-    padding: 0 20px 35px;
+  .login-heading {
+    font-size: 28px;
+  }
+
+  .login-description {
     font-size: 14px;
   }
 
@@ -382,3 +536,37 @@
 }
 
 
+
+/* STUDENT / TUTOR TOGGLE */
+.role-toggle {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 25px;
+  padding: 5px;
+  background: #eeeff4;
+  border-radius: 12px;
+}
+
+/* Overrides the full-width blue .login-card button styles */
+.login-card .role-toggle .role-option {
+  flex: 1;
+  padding: 11px 10px;
+  background: transparent;
+  color: #65708a;
+  border-radius: 9px;
+  box-shadow: none;
+  font-size: 14px;
+  transform: none;
+}
+
+.login-card .role-toggle .role-option:hover {
+  background: rgba(255, 255, 255, 0.6);
+  box-shadow: none;
+  transform: none;
+}
+
+.login-card .role-toggle .role-option.active {
+  background: #ffffff;
+  color: #2955db;
+  box-shadow: 0 2px 8px rgba(17, 29, 59, 0.08);
+}
