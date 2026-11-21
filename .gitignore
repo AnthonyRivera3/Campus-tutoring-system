@@ -1,0 +1,4 @@
+# Environment variables (applies to every folder in the repo)
+.env
+.env.*
+!.env.example

@@ -1,0 +1,347 @@
+/* Tutor dashboard. Builds on Dashboard.css (header, banner, footer). */
+
+/* TABS */
+.tutor-tabs {
+  display: flex;
+  gap: 6px;
+  margin-top: 32px;
+  padding: 6px;
+  background: #ffffff;
+  border: 1px solid #e0e4ec;
+  border-radius: 14px;
+  overflow-x: auto;
+}
+
+.tutor-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  justify-content: center;
+  padding: 11px 18px;
+  background: transparent;
+  color: #596780;
+  border: none;
+  border-radius: 9px;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.tutor-tab:hover {
+  color: #111d3b;
+  background: #f8faff;
+}
+
+.tutor-tab.is-active {
+  background: #2955db;
+  color: #ffffff;
+}
+
+.tab-badge {
+  min-width: 20px;
+  padding: 2px 6px;
+  background: #e5484d;
+  color: #ffffff;
+  border-radius: 999px;
+  font-size: 12px;
+  line-height: 16px;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+/* PANEL */
+.tutor-panel {
+  margin-top: 22px;
+  padding: 28px;
+  background: #ffffff;
+  border: 1px solid #e0e4ec;
+  border-radius: 18px;
+}
+
+.panel-header {
+  margin-bottom: 22px;
+}
+
+.panel-header h2 {
+  margin: 0 0 6px;
+  font-size: 23px;
+  font-weight: 650;
+}
+
+.panel-header p {
+  margin: 0;
+  color: #71809b;
+  font-size: 14px;
+}
+
+.panel-empty {
+  margin: 0;
+  padding: 28px;
+  background: #f8faff;
+  border: 1px dashed #d8dce5;
+  border-radius: 12px;
+  color: #71809b;
+  font-size: 14px;
+  text-align: center;
+}
+
+.panel-error {
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  background: #fdecec;
+  border: 1px solid #f5c2c4;
+  border-radius: 10px;
+  color: #b42318;
+  font-size: 14px;
+}
+
+/* LIST ITEMS */
+.item-list,
+.schedule-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 20px;
+  border: 1px solid #e0e4ec;
+  border-radius: 13px;
+}
+
+.item-body h3,
+.schedule-details h3 {
+  margin: 0 0 4px;
+  font-size: 16px;
+  font-weight: 650;
+}
+
+.item-meta {
+  margin: 0 0 2px;
+  color: #596780;
+  font-size: 14px;
+}
+
+.item-note {
+  margin: 8px 0 0;
+  color: #71809b;
+  font-size: 14px;
+  font-style: italic;
+}
+
+.item-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* BUTTONS */
+.btn {
+  padding: 10px 18px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: #2955db;
+  color: #ffffff;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #1f46bd;
+}
+
+.btn-secondary {
+  background: #ffffff;
+  color: #111d3b;
+  border-color: #d8dce5;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  border-color: #111d3b;
+}
+
+.btn-danger {
+  background: #ffffff;
+  color: #b42318;
+  border-color: #f5c2c4;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: #fdecec;
+}
+
+/* STATUS PILLS */
+.status-pill {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.status-pill.is-open {
+  background: #eaf0ff;
+  color: #2955db;
+}
+
+.status-pill.is-pending {
+  background: #fff4e0;
+  color: #a15c00;
+}
+
+.status-pill.is-booked,
+.status-pill.is-live {
+  background: #e3f6ea;
+  color: #18794e;
+}
+
+.status-pill.is-upcoming {
+  background: #eaf0ff;
+  color: #2955db;
+}
+
+.status-pill.is-done {
+  background: #eef0f4;
+  color: #71809b;
+}
+
+/* FORMS */
+.availability-form,
+.course-form {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 22px;
+  padding: 18px;
+  background: #f8faff;
+  border: 1px solid #e0e4ec;
+  border-radius: 13px;
+}
+
+.availability-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: #596780;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.availability-form input,
+.course-form select {
+  padding: 9px 12px;
+  background: #ffffff;
+  border: 1px solid #d8dce5;
+  border-radius: 8px;
+  color: #111d3b;
+  font: inherit;
+  font-size: 14px;
+}
+
+.course-form select {
+  flex: 1;
+  min-width: 200px;
+}
+
+/* TODAY'S SCHEDULE */
+.schedule-item {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 18px 20px;
+  border: 1px solid #e0e4ec;
+  border-left: 4px solid #2955db;
+  border-radius: 13px;
+}
+
+.schedule-item.is-live {
+  border-left-color: #18794e;
+  background: #f5fbf7;
+}
+
+.schedule-item.is-done {
+  border-left-color: #c3c9d5;
+  opacity: 0.7;
+}
+
+.schedule-time {
+  min-width: 150px;
+  color: #111d3b;
+  font-size: 15px;
+  font-weight: 650;
+}
+
+.schedule-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.schedule-item .status-pill {
+  margin-top: 0;
+}
+
+/* MOBILE */
+@media (max-width: 550px) {
+  .tutor-panel {
+    padding: 20px 16px;
+  }
+
+  .tutor-tab {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+
+  .item-card,
+  .schedule-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .item-actions {
+    width: 100%;
+  }
+
+  .item-actions .btn {
+    flex: 1;
+  }
+
+  .availability-form label,
+  .availability-form .btn,
+  .course-form select,
+  .course-form .btn {
+    width: 100%;
+  }
+}
+
+/* REDUCED MOTION */
+@media (prefers-reduced-motion: reduce) {
+  .tutor-tab,
+  .btn {
+    transition: none;
+  }
+}
